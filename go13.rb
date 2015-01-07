@@ -1,10 +1,11 @@
 require 'formula'
 
-class Go12 < Formula
+class Go13 < Formula
   homepage 'http://golang.org'
-  url 'https://storage.googleapis.com/golang/go1.2.2.src.tar.gz'
-  version '1.2.2'
-  sha1 '3ce0ac4db434fc1546fec074841ff40dc48c1167'
+  head 'https://go.googlecode.com/hg/'
+  url 'https://storage.googleapis.com/golang/go1.3.3.src.tar.gz'
+  version '1.3.3'
+  sha1 'b54b7deb7b7afe9f5d9a3f5dd830c7dede35393a'
 
   option 'cross-compile-all', "Build the cross-compilers and runtime support for all supported platforms"
   option 'cross-compile-common', "Build the cross-compilers and runtime support for darwin, linux and windows"
@@ -13,16 +14,19 @@ class Go12 < Formula
   def install
     # install the completion scripts
     bash_completion.install 'misc/bash/go' => 'go-completion.bash'
-    zsh_completion.install 'misc/zsh/go' => 'go'
+    zsh_completion.install 'misc/zsh/go' => '_go'
 
     # host platform (darwin) must come last in the targets list
     if build.include? 'cross-compile-all'
       targets = [
         ['linux',   ['386', 'amd64', 'arm']],
-        ['freebsd', ['386', 'amd64']],
-        ['netbsd',  ['386', 'amd64']],
+        ['freebsd', ['386', 'amd64', 'arm']],
+        ['netbsd',  ['386', 'amd64', 'arm']],
         ['openbsd', ['386', 'amd64']],
         ['windows', ['386', 'amd64']],
+        ['dragonfly', ['386', 'amd64']],
+        ['plan9',   ['386', 'amd64']],
+        ['solaris', ['amd64']],
         ['darwin',  ['386', 'amd64']],
       ]
     elsif build.include? 'cross-compile-common'
@@ -34,6 +38,10 @@ class Go12 < Formula
     else
       targets = [['darwin', ['']]]
     end
+
+    # The version check is due to:
+    # http://codereview.appspot.com/5654068
+    (buildpath/'VERSION').write('default') if build.head?
 
     cd 'src' do
       targets.each do |os, archs|
