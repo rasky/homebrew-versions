@@ -2,7 +2,6 @@ require 'formula'
 
 class Go13 < Formula
   homepage 'http://golang.org'
-  head 'https://go.googlecode.com/hg/'
   url 'https://storage.googleapis.com/golang/go1.3.3.src.tar.gz'
   version '1.3.3'
   sha1 'b54b7deb7b7afe9f5d9a3f5dd830c7dede35393a'
@@ -38,10 +37,6 @@ class Go13 < Formula
     else
       targets = [['darwin', ['']]]
     end
-
-    # The version check is due to:
-    # http://codereview.appspot.com/5654068
-    (buildpath/'VERSION').write('default') if build.head?
 
     cd 'src' do
       targets.each do |os, archs|
